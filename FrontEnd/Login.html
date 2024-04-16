@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="styles.css" />
+    
+    <title>Form</title>
+</head>
+
+<body>
+    <div class="login-wrap">
+        <div class="login-html">
+            <input id="tab-1" type="radio" name="tab" class="sign-in" checked><label for="tab-1" class="tab">Sign
+                In</label>
+            <input id="tab-2" type="radio" name="tab" class="sign-up"><label for="tab-2" class="tab">Sign Up</label>
+            <div class="login-form">
+                <div class="sign-in-htm">
+                    <form id="signin-form">
+                        <div class="group">
+                            <label for="email" class="label">Email Address</label>
+                            <input id="email" type="text" class="input" required>
+                        </div>
+                        <div class="group">
+                            <label for="password" class="label">Password</label>
+                            <input id="password" type="password" class="input" data-type="password" required>
+                        </div>
+                        <div class="group">
+                            <input id="check" type="checkbox" class="check" checked>
+                            <label for="check"><span class="icon"></span> Keep me Signed in</label>
+                        </div>
+                        <div class="group">
+                            <input type="submit" class="button" value="Sign In">
+                        </div>
+                        <div class="hr"></div>
+                        <div class="foot-lnk">
+                            <a href="#forgot">Forgot Password?</a>
+                        </div>
+                    </form>
+                </div>
+                <div class="sign-up-htm">
+                    <form id="signup-form">
+                        <div class="group">
+                            <label for="username" class="label">Username</label>
+                            <input id="signup-username" type="text" class="input" required>
+                        </div>
+                        <div class="group">
+                            <label for="signup-password" class="label">Password</label>
+                            <input id="signup-password" type="password" class="input" data-type="password" required>
+                        </div>
+                        <div class="group">
+                            <label for="repeat-password" class="label">Repeat Password</label>
+                            <input id="signup-repeat-password" type="password" class="input" data-type="password" required>
+                        </div>
+                        <div class="group">
+                            <label for="email" class="label">Email Address</label>
+                            <input id="signup-email" type="text" class="input" required>
+                        </div>
+                        <div class="group">
+                            <input type="submit" class="button" value="Sign Up">
+                        </div>
+                        <div class="hr"></div>
+                        <div class="foot-lnk">
+                            <label for="tab-1">Already Member?</label>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('signin-form').addEventListener('submit', function (event) {
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            fetch('http://localhost:5004/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+                    const token = data.data.details.token; 
+                    localStorage.setItem("token", token);
+                    alert(data.message);
+                    window.location.href = 'dashboard.html';
+                    
+                    //event.preventDefault();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                });
+        });
+
+
+        document.getElementById('signup-form').addEventListener('submit', function (event) {
+           
+        
+            const username = document.getElementById('signup-username').value;
+            const password = document.getElementById('signup-password').value;
+            const repeatPassword = document.getElementById('signup-repeat-password').value;
+            const email = document.getElementById('signup-email').value;
+
+
+            console.log("Password:", password);
+            console.log("Repeat Password:", repeatPassword);
+
+
+            if (password !== repeatPassword) {
+                alert('Passwords do not match.');
+                return;
+            }
+            fetch('http://localhost:5004/createAccount', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password, email })
+            })
+            .then(res => res.json())
+            .then(res => {
+                console.log(res);
+                alert(res.message);
+                event.preventDefault();
+            })
+            .catch(error => {
+                console.log('Error:', error);
+                alert('An error occurred. Please try again');
+            })
+        });
+    </script>
+
+</body>
+
+</html>
