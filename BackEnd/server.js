@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(
   session({
-    secret: "secretkey",
+        secret: "secretkey",
     saveUninitialized: true,
     resave: true,
   })
@@ -88,6 +88,14 @@ app.post("/login", (req, res) => {
     }
 
     const userDetails = result.rows[0];
+
+    req.session.user = {
+      id: userDetails.id,
+      username: userDetails.username,
+      email: userDetails.email
+      
+    };
+    console.log(req.session.user);
     const jwtToken = jwt.sign({ Email: email }, "secertkey", {
       expiresIn: "1h",
     });
@@ -100,6 +108,7 @@ app.post("/login", (req, res) => {
           email: userDetails.email,
           password: userDetails.password,
           token: jwtToken,
+          session:req.session.user
         },
       },
     });

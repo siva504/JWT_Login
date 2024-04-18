@@ -93,7 +93,19 @@
                     const token = data.data.details.token; 
                     localStorage.setItem("token", token);
                     alert(data.message);
-                    window.location.href = 'dashboard.html';
+
+                    const userDetails = {
+                        id: data.data.details.id,
+                        username: data.data.details.username,
+                        email: data.data.details.email
+                    };
+                    if (isValidSession()) {
+                        localStorage.setItem("userDetails", JSON.stringify(userDetails));
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        alert('Session or token is invalid. Please login again.');
+                        
+                    }
                     
                     //event.preventDefault();
                 })
@@ -103,6 +115,11 @@
                 });
         });
 
+        function isValidSession() {
+           
+            const token = localStorage.getItem("token");
+            return token !== null; 
+        }
 
         document.getElementById('signup-form').addEventListener('submit', function (event) {
            
